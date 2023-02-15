@@ -1,0 +1,34 @@
+# -*-Perl-*-
+
+# dbi.ntest -
+#
+# Exercise basic components of EC-DBI plugin
+#
+# Copyright (c) 2005-2010 Electric Cloud, Inc.
+# All rights reserved
+
+use strict;
+use warnings;
+use ECTest;
+
+require "$::gTestFileDir/dbi-common.ntest";
+
+# read in setup and tests that are common to all EC-DBI plugin archives
+# system tests
+
+
+ntest "check-runDBI-present", {}, sub {
+    # Check that the plugin contains required components
+    my $xpath = $::N->getSteps("$::gPlugin_name","ExecuteQuery");
+    assertOK($xpath,"get steps");
+    assertEq("RunQuery", $xpath->findvalue("//step[1]/stepName"), "step 1: run sql");
+    
+    $xpath = $::N->getSteps("$::gPlugin_name","CreateConfiguration");
+    assertOK($xpath,"get steps");
+    assertEq("CreateConfiguration", $xpath->findvalue("//step[1]/stepName"), "step 1: CreateConfiguration");
+    assertEq("CreateAndAttachCredential", $xpath->findvalue("//step[2]/stepName"), "step 2: CreateAndAttachCredential");
+    
+    $xpath = $::N->getSteps("$::gPlugin_name","DeleteConfiguration");
+    assertOK($xpath,"get steps");
+    assertEq("DeleteConfiguration", $xpath->findvalue("//step[1]/stepName"), "step 1: DeleteConfiguration");
+};

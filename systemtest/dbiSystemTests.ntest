@@ -1,0 +1,614 @@
+# -*-Perl-*-
+
+# dbiSystemTest.ntest -
+#
+# EC-DBI
+#
+# Copyright (c) 2005-2010 Electric Cloud, Inc.
+# All rights reserved
+
+use strict;
+use ECTest;
+use ECSelenium;
+
+ 
+# system tests
+
+
+require "$::gTestFileDir/dbi-common.ntest";
+
+
+$::grunMavenCreated = 0;
+$::gProjectImported = 0;
+$::gtestProjectName = 'sql test';
+
+my $outcome = "";
+
+sub importProject {
+    assertOK($::N->import(
+             { file =>"$::gTestFileDir/dbiSystemTest.xml",
+               path  => "/projects/sql test",
+               force => 1
+             } ), "import runCommandLine");
+   
+    assertOK($::N->getProcedure($::gtestProjectName, 'MYSQL'),
+    "MYSQL procedure doesn't exist");
+    
+    assertOK($::N->getProcedure($::gtestProjectName, 'MYSQL backup'),
+    "MYSQL backup procedure doesn't exist");
+    
+    assertOK($::N->getProcedure($::gtestProjectName, 'SQLITE'),
+    "SQLITE procedure doesn't exist");
+    
+    assertOK($::N->getProcedure($::gtestProjectName, 'SQLITE backup'),
+    "SQLITE backup procedure doesn't exist");
+    
+    assertOK($::N->getProcedure($::gtestProjectName, 'SQLSERVER'),
+    "SQLSERVER procedure doesn't exist");
+    
+    assertOK($::N->getProcedure($::gtestProjectName, 'SQLSERVER backup'),
+    "SQLSERVER backup procedure doesn't exist");
+    
+    assertOK($::N->getProcedure($::gtestProjectName, 'SQLITE backup'),
+    "SQLITE backup procedure doesn't exist");
+    
+    assertOK($::N->getProcedure($::gtestProjectName, 'ORACLE'),
+    "ORACLE backup procedure doesn't exist");
+    
+    assertOK($::N->getProcedure($::gtestProjectName, 'ORACLE backup'),
+    "ORACLE backup procedure doesn't exist");
+    
+    assertOK($::N->getProcedure($::gtestProjectName, 'POSTGRES'),
+    "POSTGRES procedure doesn't exist");
+    
+    assertOK($::N->getProcedure($::gtestProjectName, 'POSTGRES backup'),
+    "POSTGRES backup procedure doesn't exist");
+    
+    $::gProjectImported = 1;
+}
+
+
+sub doSetup {
+
+    if(! $::gProjectImported) {
+        importProject();
+    }
+}
+
+ntest "MYSQL", {}, sub {
+    doSetup();
+    # run test job
+ 
+    my $xpath = $::N->runProcedure("sql test", 
+            { procedureName => "MYSQL",
+            pollInterval  => '1',
+            timeout => 600,
+            actualParameter => []
+      });
+      
+        # make sure it finished
+        my $jobId = 0;
+        my $status = "";
+         
+        assertOK($xpath, "runProcedure with errors");
+        if ($xpath) {
+            $jobId  = $xpath->findvalue("//jobId");
+            $status = $xpath->findvalue("//status");
+            $outcome = $xpath->findvalue("//outcome");
+            assertTrue($jobId && $jobId ne "",'valid job id');
+            assertEq('completed',$status,"job $jobId complete");
+     
+            #abort if job did not finish
+            if ($status ne "completed") {
+                assertOK($::N->abortJob($jobId, {force => 1}));
+            }
+        }
+ # get the job details
+$xpath = $::N->getJobDetails($jobId);
+ 
+# write the job details to a file in the test directory
+writeFile("$::gCurrentTestDir/jobDetails.log","====start Job Details====\n$xpath->{_xml}\n\n====end job details===\n\n");
+
+my $DbEngine = $xpath->findvalue("//property[propertyName='DbEngine']/value");
+my $DbName = $xpath->findvalue("//property[propertyName='DbName']/value");
+my $EnableTransactions = $xpath->findvalue("//property[propertyName='EnableTransactions']/value");
+my $Format = $xpath->findvalue("//property[propertyName='Format']/value");
+my $Port = $xpath->findvalue("//property[propertyName='Port']/value");
+my $Query = $xpath->findvalue("//property[propertyName='Query']/value");
+my $Server = $xpath->findvalue("//property[propertyName='Server']/value");
+my $configName = $xpath->findvalue("//property[propertyName='configName']/value");
+
+
+# make sure the $cmd and $dir are what was expected
+assertEq('mysql', $DbEngine, "correct database engine");
+assertEq('commander', $DbName, "correct database name");
+assertEq('1', $EnableTransactions, "transaction enabled");
+assertEq('XML', $Format, "Incorrect format");
+assertEq('3306', $Port, "correct database port");
+assertEq(qq{select table_name from information_schema.tables where table_schema = 'commander';}, $Query, "correct sql statement");
+assertEq('localhost', $Server, "correct database server");
+assertEq('MYSQL', $configName, "correct config name");
+
+};
+
+ntest "MYSQL backup", {}, sub {
+    doSetup();
+    # run test job
+ 
+    my $xpath = $::N->runProcedure("sql test", 
+            { procedureName => "MYSQL backup",
+            pollInterval  => '1',
+            timeout => 600,
+            actualParameter => []
+      });
+      
+        # make sure it finished
+        my $jobId = 0;
+        my $status = "";
+         
+        assertOK($xpath, "runProcedure with errors");
+        if ($xpath) {
+            $jobId  = $xpath->findvalue("//jobId");
+            $status = $xpath->findvalue("//status");
+            $outcome = $xpath->findvalue("//outcome");
+            assertTrue($jobId && $jobId ne "",'valid job id');
+            assertEq('completed',$status,"job $jobId complete");
+     
+            #abort if job did not finish
+            if ($status ne "completed") {
+                assertOK($::N->abortJob($jobId, {force => 1}));
+            }
+        }
+ # get the job details
+$xpath = $::N->getJobDetails($jobId);
+ 
+# write the job details to a file in the test directory
+writeFile("$::gCurrentTestDir/jobDetails.log","====start Job Details====\n$xpath->{_xml}\n\n====end job details===\n\n");
+
+my $DbEngine = $xpath->findvalue("//property[propertyName='DbEngine']/value");
+my $DbName = $xpath->findvalue("//property[propertyName='DbName']/value");
+my $Port = $xpath->findvalue("//property[propertyName='Port']/value");
+my $Server = $xpath->findvalue("//property[propertyName='Server']/value");
+my $backupName = $xpath->findvalue("//property[propertyName='backupName']/value");
+my $commandLineUtility = $xpath->findvalue("//property[propertyName='commandLineUtility']/value");
+my $destinationPath = $xpath->findvalue("//property[propertyName='destinationPath']/value");
+my $configName = $xpath->findvalue("//property[propertyName='configName']/value");
+
+
+# make sure the $cmd and $dir are what was expected
+assertEq('mysql', $DbEngine, "correct database engine");
+assertEq('commander', $DbName, "correct database name");
+assertEq('3306', $Port, "correct database port");
+assertEq('localhost', $Server, "correct database server");
+assertEq('commander', $backupName, "correct backup name");
+assertEq('C:\Program Files\Electric Cloud\ElectricCommander\mysql\bin\mysqldump.exe', $commandLineUtility, "correct command line tool");
+assertEq('MYSQL', $configName, "correct config name");
+assertEq('C:\\Users\\crojas\\Desktop\\', $destinationPath, "correct destination path");
+
+};
+
+ntest "SQLITE", {}, sub {
+    doSetup();
+    # run test job
+ 
+    my $xpath = $::N->runProcedure("sql test", 
+            { procedureName => "SQLITE",
+            pollInterval  => '1',
+            timeout => 600,
+            actualParameter => []
+      });
+      
+        # make sure it finished
+        my $jobId = 0;
+        my $status = "";
+         
+        assertOK($xpath, "runProcedure with errors");
+        if ($xpath) {
+            $jobId  = $xpath->findvalue("//jobId");
+            $status = $xpath->findvalue("//status");
+            $outcome = $xpath->findvalue("//outcome");
+            assertTrue($jobId && $jobId ne "",'valid job id');
+            assertEq('completed',$status,"job $jobId complete");
+     
+            #abort if job did not finish
+            if ($status ne "completed") {
+                assertOK($::N->abortJob($jobId, {force => 1}));
+            }
+        }
+ # get the job details
+$xpath = $::N->getJobDetails($jobId);
+ 
+# write the job details to a file in the test directory
+writeFile("$::gCurrentTestDir/jobDetails.log","====start Job Details====\n$xpath->{_xml}\n\n====end job details===\n\n");
+
+my $DbEngine = $xpath->findvalue("//property[propertyName='DbEngine']/value");
+my $DbName = $xpath->findvalue("//property[propertyName='DbName']/value");
+my $EnableTransactions = $xpath->findvalue("//property[propertyName='EnableTransactions']/value");
+my $Format = $xpath->findvalue("//property[propertyName='Format']/value");
+my $Port = $xpath->findvalue("//property[propertyName='Port']/value");
+my $Query = $xpath->findvalue("//property[propertyName='Query']/value");
+my $Server = $xpath->findvalue("//property[propertyName='Server']/value");
+my $configName = $xpath->findvalue("//property[propertyName='configName']/value");
+
+
+# make sure the $cmd and $dir are what was expected
+assertEq('SQLite', $DbEngine, "correct database engine");
+assertEq('C:\Users\crojas\Desktop\prueba.sqlite', $DbName, "correct database name");
+assertEq('0', $EnableTransactions, "transaction enabled");
+assertEq('XML', $Format, "Incorrect format");
+assertEq('select * from person;', $Query, "correct sql statement");
+assertEq('SQLSERVER', $configName, "correct config name");
+
+};
+
+ntest "SQLITE backup", {}, sub {
+    doSetup();
+    # run test job
+ 
+    my $xpath = $::N->runProcedure("sql test", 
+            { procedureName => "SQLITE backup",
+            pollInterval  => '1',
+            timeout => 600,
+            actualParameter => []
+      });
+      
+        # make sure it finished
+        my $jobId = 0;
+        my $status = "";
+         
+        assertOK($xpath, "runProcedure with errors");
+        if ($xpath) {
+            $jobId  = $xpath->findvalue("//jobId");
+            $status = $xpath->findvalue("//status");
+            $outcome = $xpath->findvalue("//outcome");
+            assertTrue($jobId && $jobId ne "",'valid job id');
+            assertEq('completed',$status,"job $jobId complete");
+     
+            #abort if job did not finish
+            if ($status ne "completed") {
+                assertOK($::N->abortJob($jobId, {force => 1}));
+            }
+        }
+ # get the job details
+$xpath = $::N->getJobDetails($jobId);
+ 
+# write the job details to a file in the test directory
+writeFile("$::gCurrentTestDir/jobDetails.log","====start Job Details====\n$xpath->{_xml}\n\n====end job details===\n\n");
+
+my $DbEngine = $xpath->findvalue("//property[propertyName='DbEngine']/value");
+my $DbName = $xpath->findvalue("//property[propertyName='DbName']/value");
+my $configName = $xpath->findvalue("//property[propertyName='configName']/value");
+my $destinationPath = $xpath->findvalue("//property[propertyName='destinationPath']/value");
+
+
+# make sure the $cmd and $dir are what was expected
+assertEq('SQLite', $DbEngine, "correct database engine");
+assertEq('C:\Users\crojas\Desktop\prueba.sqlite', $DbName, "correct database name");
+assertEq('SQLSERVER', $configName, "correct config name");
+assertEq('c:\\', $destinationPath, "correct destination path");
+
+};
+
+ntest "SQLSERVER", {}, sub {
+    doSetup();
+    # run test job
+ 
+    my $xpath = $::N->runProcedure("sql test", 
+            { procedureName => "SQLSERVER",
+            pollInterval  => '1',
+            timeout => 600,
+            actualParameter => []
+      });
+      
+        # make sure it finished
+        my $jobId = 0;
+        my $status = "";
+         
+        assertOK($xpath, "runProcedure with errors");
+        if ($xpath) {
+            $jobId  = $xpath->findvalue("//jobId");
+            $status = $xpath->findvalue("//status");
+            $outcome = $xpath->findvalue("//outcome");
+            assertTrue($jobId && $jobId ne "",'valid job id');
+            assertEq('completed',$status,"job $jobId complete");
+     
+            #abort if job did not finish
+            if ($status ne "completed") {
+                assertOK($::N->abortJob($jobId, {force => 1}));
+            }
+        }
+ # get the job details
+$xpath = $::N->getJobDetails($jobId);
+ 
+# write the job details to a file in the test directory
+writeFile("$::gCurrentTestDir/jobDetails.log","====start Job Details====\n$xpath->{_xml}\n\n====end job details===\n\n");
+
+my $DbEngine = $xpath->findvalue("//property[propertyName='DbEngine']/value");
+my $DbName = $xpath->findvalue("//property[propertyName='DbName']/value");
+my $EnableTransactions = $xpath->findvalue("//property[propertyName='EnableTransactions']/value");
+my $Format = $xpath->findvalue("//property[propertyName='Format']/value");
+my $Query = $xpath->findvalue("//property[propertyName='Query']/value");
+my $configName = $xpath->findvalue("//property[propertyName='configName']/value");
+
+
+# make sure the $cmd and $dir are what was expected
+assertEq('ODBC', $DbEngine, "correct database engine");
+assertEq('SQLSERVER', $DbName, "correct database name");
+assertEq('1', $EnableTransactions, "transaction enabled");
+assertEq('XML', $Format, "Incorrect format");
+assertEq('select * from person;', $Query, "correct sql statement");
+assertEq('SQLSERVER', $configName, "correct config name");
+
+};
+
+ntest "SQLSERVER backup", {}, sub {
+    doSetup();
+    # run test job
+ 
+    my $xpath = $::N->runProcedure("sql test", 
+            { procedureName => "SQLSERVER backup",
+            pollInterval  => '1',
+            timeout => 600,
+            actualParameter => []
+      });
+      
+        # make sure it finished
+        my $jobId = 0;
+        my $status = "";
+         
+        assertOK($xpath, "runProcedure with errors");
+        if ($xpath) {
+            $jobId  = $xpath->findvalue("//jobId");
+            $status = $xpath->findvalue("//status");
+            $outcome = $xpath->findvalue("//outcome");
+            assertTrue($jobId && $jobId ne "",'valid job id');
+            assertEq('completed',$status,"job $jobId complete");
+     
+            #abort if job did not finish
+            if ($status ne "completed") {
+                assertOK($::N->abortJob($jobId, {force => 1}));
+            }
+        }
+ # get the job details
+$xpath = $::N->getJobDetails($jobId);
+ 
+# write the job details to a file in the test directory
+writeFile("$::gCurrentTestDir/jobDetails.log","====start Job Details====\n$xpath->{_xml}\n\n====end job details===\n\n");
+
+my $DbEngine = $xpath->findvalue("//property[propertyName='DbEngine']/value");
+my $DbName = $xpath->findvalue("//property[propertyName='DbName']/value");
+my $Server = $xpath->findvalue("//property[propertyName='Server']/value");
+my $backupName = $xpath->findvalue("//property[propertyName='backupName']/value");
+my $commandLineUtility = $xpath->findvalue("//property[propertyName='commandLineUtility']/value");
+my $destinationPath = $xpath->findvalue("//property[propertyName='destinationPath']/value");
+my $configName = $xpath->findvalue("//property[propertyName='configName']/value");
+
+
+# make sure the $cmd and $dir are what was expected
+assertEq('ODBC', $DbEngine, "correct database engine");
+assertEq('test', $DbName, "correct database name");
+assertEq('av-crojas\SQLExpress', $Server, "correct database server");
+assertEq('backup', $backupName, "correct backup name");
+assertEq('c:\Program Files\Microsoft SQL Server\100\Tools\Binn\osql', $commandLineUtility, "correct command line tool");
+assertEq('SQLSERVER', $configName, "correct config name");
+assertEq('C:\\Users\\crojas\\Desktop\\', $destinationPath, "correct destination path");
+
+};
+
+ntest "ORACLE", {}, sub {
+    doSetup();
+    # run test job
+ 
+    my $xpath = $::N->runProcedure("sql test", 
+            { procedureName => "ORACLE",
+            pollInterval  => '1',
+            timeout => 600,
+            actualParameter => []
+      });
+      
+        # make sure it finished
+        my $jobId = 0;
+        my $status = "";
+         
+        assertOK($xpath, "runProcedure with errors");
+        if ($xpath) {
+            $jobId  = $xpath->findvalue("//jobId");
+            $status = $xpath->findvalue("//status");
+            $outcome = $xpath->findvalue("//outcome");
+            assertTrue($jobId && $jobId ne "",'valid job id');
+            assertEq('completed',$status,"job $jobId complete");
+     
+            #abort if job did not finish
+            if ($status ne "completed") {
+                assertOK($::N->abortJob($jobId, {force => 1}));
+            }
+        }
+ # get the job details
+$xpath = $::N->getJobDetails($jobId);
+ 
+# write the job details to a file in the test directory
+writeFile("$::gCurrentTestDir/jobDetails.log","====start Job Details====\n$xpath->{_xml}\n\n====end job details===\n\n");
+
+my $DbEngine = $xpath->findvalue("//property[propertyName='DbEngine']/value");
+my $DbName = $xpath->findvalue("//property[propertyName='DbName']/value");
+my $EnableTransactions = $xpath->findvalue("//property[propertyName='EnableTransactions']/value");
+my $Format = $xpath->findvalue("//property[propertyName='Format']/value");
+my $Query = $xpath->findvalue("//property[propertyName='Query']/value");
+my $configName = $xpath->findvalue("//property[propertyName='configName']/value");
+
+
+# make sure the $cmd and $dir are what was expected
+assertEq('Oracle', $DbEngine, "correct database engine");
+assertEq('XE', $DbName, "correct database name");
+assertEq('1', $EnableTransactions, "transaction enabled");
+assertEq('XML', $Format, "Incorrect format");
+assertEq('select * from person;', $Query, "correct sql statement");
+assertEq('ORACLE', $configName, "correct config name");
+
+};
+
+ntest "ORACLE backup", {}, sub {
+    doSetup();
+    # run test job
+ 
+    my $xpath = $::N->runProcedure("sql test", 
+            { procedureName => "ORACLE backup",
+            pollInterval  => '1',
+            timeout => 600,
+            actualParameter => []
+      });
+      
+        # make sure it finished
+        my $jobId = 0;
+        my $status = "";
+         
+        assertOK($xpath, "runProcedure with errors");
+        if ($xpath) {
+            $jobId  = $xpath->findvalue("//jobId");
+            $status = $xpath->findvalue("//status");
+            $outcome = $xpath->findvalue("//outcome");
+            assertTrue($jobId && $jobId ne "",'valid job id');
+            assertEq('completed',$status,"job $jobId complete");
+     
+            #abort if job did not finish
+            if ($status ne "completed") {
+                assertOK($::N->abortJob($jobId, {force => 1}));
+            }
+        }
+ # get the job details
+$xpath = $::N->getJobDetails($jobId);
+ 
+# write the job details to a file in the test directory
+writeFile("$::gCurrentTestDir/jobDetails.log","====start Job Details====\n$xpath->{_xml}\n\n====end job details===\n\n");
+
+my $DbEngine = $xpath->findvalue("//property[propertyName='DbEngine']/value");
+my $DbName = $xpath->findvalue("//property[propertyName='DbName']/value");
+my $Server = $xpath->findvalue("//property[propertyName='Server']/value");
+my $backupName = $xpath->findvalue("//property[propertyName='backupName']/value");
+my $commandLineUtility = $xpath->findvalue("//property[propertyName='commandLineUtility']/value");
+my $destinationPath = $xpath->findvalue("//property[propertyName='destinationPath']/value");
+my $configName = $xpath->findvalue("//property[propertyName='configName']/value");
+
+
+# make sure the $cmd and $dir are what was expected
+assertEq('Oracle', $DbEngine, "correct database engine");
+assertEq('crojas', $DbName, "correct database name");
+assertEq('localhost', $Server, "correct database server");
+assertEq('backup', $backupName, "correct backup name");
+assertEq('exp', $commandLineUtility, "correct command line tool");
+assertEq('ORACLE', $configName, "correct config name");
+assertEq('C:\\Users\\crojas\\Desktop\\', $destinationPath, "correct destination path");
+
+};
+
+ntest "POSTGRES", {}, sub {
+    doSetup();
+    # run test job
+ 
+    my $xpath = $::N->runProcedure("sql test", 
+            { procedureName => "POSTGRES",
+            pollInterval  => '1',
+            timeout => 600,
+            actualParameter => []
+      });
+      
+        # make sure it finished
+        my $jobId = 0;
+        my $status = "";
+         
+        assertOK($xpath, "runProcedure with errors");
+        if ($xpath) {
+            $jobId  = $xpath->findvalue("//jobId");
+            $status = $xpath->findvalue("//status");
+            $outcome = $xpath->findvalue("//outcome");
+            assertTrue($jobId && $jobId ne "",'valid job id');
+            assertEq('completed',$status,"job $jobId complete");
+     
+            #abort if job did not finish
+            if ($status ne "completed") {
+                assertOK($::N->abortJob($jobId, {force => 1}));
+            }
+        }
+ # get the job details
+$xpath = $::N->getJobDetails($jobId);
+ 
+# write the job details to a file in the test directory
+writeFile("$::gCurrentTestDir/jobDetails.log","====start Job Details====\n$xpath->{_xml}\n\n====end job details===\n\n");
+
+my $DbEngine = $xpath->findvalue("//property[propertyName='DbEngine']/value");
+my $DbName = $xpath->findvalue("//property[propertyName='DbName']/value");
+my $EnableTransactions = $xpath->findvalue("//property[propertyName='EnableTransactions']/value");
+my $Format = $xpath->findvalue("//property[propertyName='Format']/value");
+my $Port = $xpath->findvalue("//property[propertyName='Port']/value");
+my $Query = $xpath->findvalue("//property[propertyName='Query']/value");
+my $Server = $xpath->findvalue("//property[propertyName='Server']/value");
+my $configName = $xpath->findvalue("//property[propertyName='configName']/value");
+
+
+# make sure the $cmd and $dir are what was expected
+assertEq('Pg', $DbEngine, "correct database engine");
+assertEq('test', $DbName, "correct database name");
+assertEq('1', $EnableTransactions, "transaction enabled");
+assertEq('XML', $Format, "Incorrect format");
+assertEq('5432', $Port, "correct database port");
+assertEq('select * from person', $Query, "correct sql statement");
+assertEq('localhost', $Server, "correct database server");
+assertEq('POSTGRES', $configName, "correct config name");
+
+};
+
+ntest "POSTGRES backup", {}, sub {
+    doSetup();
+    # run test job
+ 
+    my $xpath = $::N->runProcedure("sql test", 
+            { procedureName => "POSTGRES backup",
+            pollInterval  => '1',
+            timeout => 600,
+            actualParameter => []
+      });
+      
+        # make sure it finished
+        my $jobId = 0;
+        my $status = "";
+         
+        assertOK($xpath, "runProcedure with errors");
+        if ($xpath) {
+            $jobId  = $xpath->findvalue("//jobId");
+            $status = $xpath->findvalue("//status");
+            $outcome = $xpath->findvalue("//outcome");
+            assertTrue($jobId && $jobId ne "",'valid job id');
+            assertEq('completed',$status,"job $jobId complete");
+     
+            #abort if job did not finish
+            if ($status ne "completed") {
+                assertOK($::N->abortJob($jobId, {force => 1}));
+            }
+        }
+ # get the job details
+$xpath = $::N->getJobDetails($jobId);
+ 
+# write the job details to a file in the test directory
+writeFile("$::gCurrentTestDir/jobDetails.log","====start Job Details====\n$xpath->{_xml}\n\n====end job details===\n\n");
+
+my $DbEngine = $xpath->findvalue("//property[propertyName='DbEngine']/value");
+my $DbName = $xpath->findvalue("//property[propertyName='DbName']/value");
+my $Port = $xpath->findvalue("//property[propertyName='Port']/value");
+my $Server = $xpath->findvalue("//property[propertyName='Server']/value");
+my $backupName = $xpath->findvalue("//property[propertyName='backupName']/value");
+my $commandLineUtility = $xpath->findvalue("//property[propertyName='commandLineUtility']/value");
+my $destinationPath = $xpath->findvalue("//property[propertyName='destinationPath']/value");
+my $configName = $xpath->findvalue("//property[propertyName='configName']/value");
+
+
+# make sure the $cmd and $dir are what was expected
+assertEq('Pg', $DbEngine, "correct database engine");
+assertEq('test', $DbName, "correct database name");
+assertEq('5432', $Port, "correct database port");
+assertEq('localhost', $Server, "correct database server");
+assertEq('backup', $backupName, "correct backup name");
+assertEq('C:\Program Files (x86)\PostgreSQL\9.0\bin\pg_dump.exe', $commandLineUtility, "correct command line tool");
+assertEq('POSTGRES', $configName, "correct config name");
+assertEq('C:\\Users\\crojas\\Desktop\\', $destinationPath, "correct destination path");
+
+};

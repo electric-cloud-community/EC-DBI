@@ -1,0 +1,65 @@
+<editor>
+    <help>https://docs.cloudbees.com/docs/cloudbees-cd/latest/plugins/ec-dbi#BackUpDB</help>
+    <formElement>
+        <type>select</type>
+        <label>Database engine:</label>
+        <property>DbEngine</property>
+        <required>1</required>
+        <documentation>Choose any of the available database options.</documentation>
+        <option><name>SQLServer</name><value>SQLServer</value></option>
+        <option><name>MySql</name><value>mysql</value></option>
+        <option><name>Oracle</name><value>Oracle</value></option>
+        <option><name>Sqlite</name><value>SQLite</value></option>
+        <option><name>Postgres</name><value>Pg</value></option>
+        <option><name>ODBC</name><value>ODBC</value></option>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Command Line Utility:</label>
+        <property>commandLineUtility</property>
+        <required>1</required>
+        <documentation>Absolute path to a backup command utility SQLServer(osql), Mysql(mysqldump), Oracle(exp), Postgres(pg_dump).</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Database name:</label>
+        <property>DbName</property>
+        <required>1</required>
+        <documentation>The name of the database you want to use</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Server:</label>
+        <property>Server</property>
+        <required>0</required>
+        <documentation>Database server name.</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Port:</label>
+        <property>Port</property>
+        <required>0</required>
+        <documentation>Database port.</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Configuration name:</label>
+        <property>configName</property>
+        <required>1</required>
+        <documentation>Name of the configuration that contains the database user and password.</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Name of the backup file:</label>
+        <property>backupName</property>
+        <required>0</required>
+        <documentation>Name of the backup file (without extention).</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Destination path:</label>
+        <property>destinationPath</property>
+        <required>1</required>
+        <documentation>The path where you want to store your backup file.</documentation>
+    </formElement>
+</editor>

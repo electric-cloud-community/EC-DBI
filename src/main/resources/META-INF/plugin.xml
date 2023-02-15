@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+    <key>@PLUGIN_KEY@</key>
+    <version>@PLUGIN_VERSION@</version>
+    <label>@PLUGIN_KEY@</label>
+    <description>Integration for the Perl DBI / DBD interface</description>
+    <configure>configurations.xml</configure>
+    <help>@PLUGIN_KEY@_help.xml</help>
+    <author>CloudBees</author>
+    <authorUrl>http://www.electric-cloud.com/support</authorUrl>
+    <category>Database</category>
+    <commander-version min="3.6"/>
+    <components>
+        <component name="ConfigurationManagement">
+            <javascript>war/ecplugins.Server.ConfigurationManagement/ecplugins.Server.ConfigurationManagement.nocache.js</javascript>
+        </component>
+    </components>
+    <hasAdoc>true</hasAdoc>
+    <catalogLabel>Perl DBI</catalogLabel>
+    <detailedDescription>The plugin executes the SQL code against databases by using the Perl DBI module,. Requires corresponding DBD module.</detailedDescription>
+</plugin>

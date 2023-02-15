@@ -1,0 +1,86 @@
+<editor>
+    <help>https://docs.cloudbees.com/docs/cloudbees-cd/latest/plugins/ec-dbi#ExecuteQuery</help>
+    <formElement>
+        <type>select</type>
+        <label>Database engine:</label>
+        <property>DbEngine</property>
+        <required>1</required>
+        <documentation>Choose the database engine you want to connect to.</documentation>
+        <option><name>SQLServer</name><value>SQLServer</value></option>
+        <option><name>MySql</name><value>mysql</value></option>
+        <option><name>Oracle</name><value>Oracle</value></option>
+        <option><name>Sqlite</name><value>SQLite</value></option>
+        <option><name>Postgres</name><value>Pg</value></option>
+        <option><name>ODBC</name><value>ODBC</value></option>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Database name:</label>
+        <property>DbName</property>
+        <required>1</required>
+        <documentation>The name of the database you want to use.</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Server:</label>
+        <property>Server</property>
+        <required>0</required>
+        <documentation>Database server name.</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Port:</label>
+        <property>Port</property>
+        <required>0</required>
+        <documentation>Database port. Some of the default ports are: Mysql: 3306, SQLServer: 1433, Oracle: 1521, Postgres: 5432.</documentation>
+    </formElement>
+    <formElement>
+        <type>checkbox</type>
+        <label>Enable transactions</label>
+        <property>EnableTransactions</property>
+        <checkedValue>1</checkedValue>
+        <uncheckedValue>0</uncheckedValue>
+        <required>0</required>
+        <value>1</value>
+        <documentation>If cheched this option will protect your data in case of errors.</documentation>
+    </formElement>
+    <formElement>
+        <type>select</type>
+        <label>Display format:</label>
+        <property>Format</property>
+        <required>1</required>
+        <documentation>Choose any of the available display formats.</documentation>
+        <option><name>JSON</name><value>JSON</value></option>
+        <option><name>XML</name><value>XML</value></option>
+        <option><name>HTML</name><value>HTML</value></option>
+    </formElement>
+    <formElement>
+        <type>textarea</type>
+        <label>Sql query</label>
+        <property>Query</property>
+        <required>0</required>
+        <documentation>The query you want to run against the database.</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Sql file:</label>
+        <property>SqlFile</property>
+        <required>0</required>
+        <documentation>Absolute path to a sql script</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Configuration name:</label>
+        <property>configName</property>
+        <required>1</required>
+        <documentation>Name of the configuration that contains the database user and password.</documentation>
+    </formElement>
+    <formElement>
+        <label>Result (output property path)</label>
+        <property>Result_outpp</property>
+        <value></value>
+        <documentation>Property name used to store the result of queries.</documentation>
+        <required>0</required>
+        <type>entry</type>
+    </formElement>
+</editor>
