@@ -15,7 +15,7 @@
             <javascript>war/ecplugins.Server.ConfigurationManagement/ecplugins.Server.ConfigurationManagement.nocache.js</javascript>
         </component>
     </components>
-    <hasAdoc>true</hasAdoc>
     <catalogLabel>Perl DBI</catalogLabel>
+    <repositoryUrl>https://github.com/electric-cloud-community/EC-DBI/</repositoryUrl>
     <detailedDescription>The plugin executes the SQL code against databases by using the Perl DBI module,. Requires corresponding DBD module.</detailedDescription>
 </plugin>
