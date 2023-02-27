@@ -32,11 +32,35 @@ Perl DBD modules can be found in the  [CPAN documentation](http://search.cpan.or
 For all parameter descriptions below, required parameters are shown in
 <span class=".required">bold italics</span>.
 
-Plugin configurations are sets of parameters that apply across some or
-all of the plugin’s procedures. They reduce repetition of common values,
-create predefined sets of parameters for end users, and securely store
-credentials where needed. Each configuration is given a unique name that
-is entered in designated parameters on procedures that use them.
+## Plugin configurations
+
+Plugin configurations are sets of parameters that can be applied
+across some, or all, of the plugin procedures. They
+can reduce the repetition of common values, create
+predefined parameter sets, and securely store credentials.
+Each configuration is given a unique name that is entered
+in the designated parameter for the plugin procedures that use them.
+
+
+### Creating plugin configurations
+
+To create plugin configurations in CloudBees CD/RO, complete the following steps:
+
+1. Navigate to DevOps Essentials &gt; Plugin Management &gt; Plugin configurations.
+
+2. Select *Add plugin configuration* to create a new configuration.
+
+3. In the *New Configuration* window, specify a *Name* for the configuration.
+
+4. Select the *Project* that the configuration belongs to.
+
+5. Optionally, add a *Description* for the configuration.
+
+6. Select the appropriate *Plugin* for the configuration.
+
+7. Configure the parameters per the descriptions below.
+
+You may need to create additional configurations later.
 
 # Plugin configuration parameters
 
