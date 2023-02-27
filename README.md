@@ -293,11 +293,11 @@ The following example shows output for a SQL Server backup:
 
 ## EC-DBI 2.0.2
 
--   Fixed issue with configurations being cached for Internet Explorer(R).
+-   Fixed issue with configurations being cached for Internet Explorer&reg;.
 
 ## EC-DBI 2.0.1
 
--
+- ElectricCommander was renamed to CloudBees.
 
 ## EC-DBI 2.0.0
 
