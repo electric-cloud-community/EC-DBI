@@ -1,5 +1,3 @@
-Plugin Version @PLUGIN\_VERSION@ Revised on July 1, 2015
-
 # Perl DBI links
 
 More information can be found in the [Perl DBI documentation](http://dbi.perl.org/).
