@@ -1,3 +1,24 @@
+# Perl DBI plugin
+
+The Perl DBI module is a simple Perl database interface used to execute queries. The Perl DBI module executes a query through an appropriate database driver (DBD) module.
+
+A DBD module has the required libraries needed to communicate to a database. When you use the Perl DBI module to make a query, it sends the query to the corresponding DBD module to communicate directly to the database.
+
+With the EC-DBI plugin, you can:
+
+* Execute SQL scripts from SQL files or from the text area in the parameter form.
+* Create backups for your databases.
+
+The plugin executes the SQL code against databases by using the Perl DBI module, which means that you must install the corresponding DBD module. DBD-mysql and DBD-ODBC are installed by default, which means that you can access MYSQL and SQL Server or any preconfigured ODBC connection by default. Additional DBD Modules are required for Oracle, Postgres, and SQLite. Additionally, it can back up databases by calling command-line tools for almost every database type. For example, MySQL uses `mysqldump`, SQL Server uses `osql`, Oracle uses `exp`, and Postgres `usespg_dump`.
+
+This plugin can communicate with the following databases:
+
+* SQL Server (through ODBC) 2008
+* MySQL 5.5
+* Oracle 9.2 or later
+* SQLite 3.7.7
+* Postgres 8.4 or later
+
 # Perl DBI links
 
 More information can be found in the [Perl DBI documentation](http://dbi.perl.org/).
